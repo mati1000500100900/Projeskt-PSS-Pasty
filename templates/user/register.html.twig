@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <br><br>
+    <div class="card bg-dark text-white col-md-6 mx-auto">
+
+        <div class="card-body">
+            <form method="post" action="{{ path('register') }}">
+                <div class="form-group mt-2">
+                    <label for="usernameInput">Login</label>
+                    <input type="text" class="form-control" name="_username" id="usernameInput" aria-describedby="emailHelp" placeholder="Login" {% if lastdata is defined %} value="{{ lastdata['_username'] }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="emailInput">Email</label>
+                    <input type="email" class="form-control" name="_email" id="emailInput" aria-describedby="emailHelp" placeholder="Email" {% if lastdata is defined %} value="{{ lastdata['_email'] }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Hasło</label>
+                    <input type="password" class="form-control" name="_password" id="passwordInput" placeholder="Hasło" {% if lastdata is defined %} value="{{ lastdata['_password'] }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="passwordConfirmInput">Powtórz hasło</label>
+                    <input type="password" class="form-control" name="_password_confirm" id="passwordConfirmInput" placeholder="Hasło" {% if lastdata is defined %} value="{{ lastdata['_password_confirm'] }}"{% endif %}>
+                </div>
+
+                <br>
+                <div class="form-group">
+                    <button type="submit" value="true" class="btn btn-primary btn-block">Rejestracja</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}

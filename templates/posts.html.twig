@@ -1,0 +1,360 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="vueApp">
+        <div class="card col-12 text-white bg-dark">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 col-sm-4">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary btn-block dropdown-toggle bg-tertiary" type="button"
+                                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <[sortByHuman]>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" :class="{active: sortBy=='new'}" @click="setSort('new')"
+                                   href="#">Nowe</a>
+                                <a class="dropdown-item" :class="{active: sortBy=='best'}" @click="setSort('best')"
+                                   href="#">Najlepsze</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <div class="btn btn-block btn-dark"><[viewDescription]></div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        <div class="input-group">
+                            <input class="form-control bg-tertiary text-white" id="searchbar" type="text"
+                                   placeholder="Szukaj" v-model="search" autocomplete="off">
+                            <div v-if="search" class="input-group-append">
+                                <button class="btn btn-outline-light bg-tertiary" type="button" @click="clearSearch()">Wyczyść</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <template v-for="post in posts">
+            <br>
+            <div class="card text-white bg-dark">
+                <div class="card-header">
+                    <span @click="setAuthor(post.author.username)"><[post.author.username]></span>&nbsp;&nbsp;&nbsp;<small
+                            v-html="timestampToMoment(post.timestamp)"></small>
+                    <div v-if="appUser" class="dropdown float-right">
+                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="actionsDropdown"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Akcje
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsDropdown">
+                            <a v-if="post.author.username==appUser" class="dropdown-item actions-item"
+                               @click="deletePost(post)">
+                                <img width="16" height="16" fill="currentColor" src="/assets/svg/trash-alt.svg">
+                                &nbsp;Usuń</a>
+                            <a v-else class="dropdown-item actions-item" @click="reportPost(post)">
+                                <img width="16" height="16" fill="currentColor" src="/assets/svg/flag.svg">
+                                &nbsp;Zgłoś</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <img v-if="post.picture" class="thumbnail" @click="showPhoto(post.picture.name)"
+                         :src="'/api/cdn/'+post.picture.name">
+
+                    <pre class="text-white" :class="{longpost: post.long}"><span
+                                v-html="tagsToLinks(post.content)"></span></pre>
+                    <div v-if="post.long" @click="showAll(post)" class="fakelink">[pokaż całość]</div>
+                </div>
+                <div class="card-footer">
+                    <template v-if="appUser!='' && appUser!=post.author.username">
+                        <template v-if="ifLiked(post)">
+                            <span class="float-right btn btn-success btn-sm"><[post.likesCount]></span>
+                        </template>
+                        <template v-else>
+                            <span class="float-right btn btn-primary btn-sm"
+                                  @click="like(post)"><[post.likesCount]></span>
+                        </template>
+                    </template>
+                    <template v-else>
+                        <span class="float-right btn btn-secondary btn-sm"><[post.likesCount]></span>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <!--loading bar-->
+        <template v-if="!loading && posts.length==0">
+            <br>
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="text-center">Brak Wyników</div>
+                </div>
+            </div>
+        </template>
+        <!--loading bar-->
+        <template v-if="loading">
+            <br>
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="text-center">Ładowanie <span class="spinner-border spinner-border-sm"></span></div>
+                </div>
+            </div>
+        </template>
+        <!--image modal-->
+        <div aria-hidden="true" class="modal fade" id="imageModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content bg-dark">
+                    <div class="modal-body mb-0 p-0">
+                        <img :src="'/api/cdn/'+modalImage" alt="" style="width:100%">
+                    </div>
+                    <div class="modal-footer" id="imageModalFooter">
+                        <button class="btn btn-outline-primary btn-rounded btn-md ml-4 text-center" data-dismiss="modal"
+                                type="button">Zamknij
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--confirm modal-->
+        <div aria-hidden="true" class="modal fade" id="confirmModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-body">
+                        Na pewno?
+                    </div>
+                    <div class="modal-footer" id="confirmModalFooter">
+                        <button type="button" class="btn btn-secondary " data-dismiss="modal">Nie</button>
+                        <button type="button" class="btn btn-primary " data-dismiss="modal"
+                                @click="actuallyDelete()">Tak
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--report modal-->
+        <div aria-hidden="true" class="modal fade" id="reportModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Powód zgłoszenia:</label>
+                            <input type="text" id="reportModalInput" class="form-control bg-tertiary text-white" placeholder="Powód zgłoszenia" v-model="reportReason">
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="reportModalFooter">
+                        <button type="button" class="btn btn-secondary " data-dismiss="modal">Anuluj</button>
+                        <button type="button" class="btn btn-primary " data-dismiss="modal"
+                                @click="actuallyReport()">Zgłoś
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/axios.js') }}"></script>
+    <script src="{{ asset('assets/js/vue.js') }}"></script>
+    <script src="{{ asset('assets/js/lodash.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+
+    <script>
+        window.onscroll = () => {
+            let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight + 20 > document.documentElement.offsetHeight;
+            if (bottomOfWindow) app.loadMore();
+        }
+
+        var app = new Vue({
+            el: '#vueApp',
+            data: {
+                appUser: "{{ app.user.username|default("") }}",
+                search: "",
+                loading: true,
+                page: 0,
+                author: "all",
+                activeTag: "all",
+                posts: [],
+                sortBy: "new",
+                sortByHuman: "Nowe",
+                viewDescription: "Wszystkie wpisy",
+                loadBlock: true,
+                modalImage: "",
+                //managing posts
+                postInQuestion: null,
+                reportReason: "",
+            },
+            watch: {
+                search: function (value) {
+                    if (value != "") {
+                        this.debouncedSearch();
+                    }
+                }
+            },
+            methods: {
+                escapeHtml: function (input) {
+                    return input.replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                },
+                tagsToLinks: function (input) {
+                    input = this.escapeHtml(input);
+                    let regexp = /\#[a-z0-9]{3,32}/gm;
+                    let matches = [...input.matchAll(regexp)];
+                    let uniqueMatches = [];
+                    matches.forEach(function (el) {
+                        if ($.inArray(el[0], uniqueMatches) === -1) uniqueMatches.push(el[0]);
+                    });
+                    if (uniqueMatches.length > 0) {
+                        uniqueMatches.forEach(function (el) {
+                            input = input.replaceAll(el, "<span class='fakelink' onclick='tagClicked(\"" + el.substring(1) + "\")'>" + el + "</span>");
+                        })
+                    }
+                    return input;
+                },
+                showPhoto: function (name) {
+                    this.modalImage = name;
+                    $('#imageModal').modal('show');
+                },
+                timestampToMoment: function (input) {
+                    return "<span title='" + moment(input).format('YYYY-MM-DD, HH:mm:ss') + "'>" + moment(input).fromNow() + "</span>";
+                },
+                like: function (post) {
+                    axios.get('/api/like/' + post.tid)
+                        .then(response => {
+                            if (response.data == "liked") {
+                                post.likesCount++;
+                                post.likes.push({username: this.appUser});
+                            }
+                        })
+                },
+                ifLiked: function (post) {
+                    return post.likes.some(user => user['username'] == this.appUser);
+                },
+                showAll: function (post) {
+                    post.long = false;
+                },
+                reportPost: function (post){
+                    this.reportReason="";
+                    this.postInQuestion = post;
+                    $('#reportModal').modal('show');
+                },
+                actuallyReport: function (){
+                    let data = new FormData();
+                    data.append('tid', this.postInQuestion.tid);
+                    data.append("reason", this.reportReason);
+                    axios.post("/api/report", data).then(function (res){
+                        if(res.data="reported"){
+                            toastr.success('Zgłoszono pomyślnie');
+                        }
+                        else{
+                            toastr.error(res.data);
+                        }
+                    }).catch(function (){
+                        toastr.error("Błąd API");
+                    })
+                },
+                deletePost: function (post) {
+                    this.postInQuestion = post;
+                    $('#confirmModal').modal('show');
+                },
+                actuallyDelete: function () {
+                    let vm = this;
+                    axios.get('/api/delete/' + this.postInQuestion.tid)
+                        .then(function (res) {
+                        if (res.data == "deleted") {
+                            vm.posts = vm.posts.filter(function (el) {
+                                return el.tid !== vm.postInQuestion.tid
+                            });
+                            toastr.success('Usunięto pomyślnie');
+                        }
+                        else{
+                            toastr.error(res.data);
+                        }
+                    }).catch(function (){
+                        toastr.error("Błąd API");
+                    })
+                },
+                setSort: function (by) {
+                    Cookies.set("sortBy",by);
+                    this.sortBy = by;
+                    this.sortByHuman = by == "new" ? "Nowe" : "Najlepsze";
+                    this.posts = [];
+                    this.page = 0;
+                    this.getPosts();
+                },
+                loadMore: function () {
+                    if (!this.loadBlock) {
+                        this.loadBlock = true;
+                        this.page++;
+                        this.getPosts();
+                    }
+                },
+                setTag: function (name) {
+                    this.activeTag = name;
+                    this.page = 0;
+                    this.author = "all";
+                    this.search = "";
+                    this.viewDescription = "Tag #" + this.activeTag;
+                    this.posts = [];
+                    this.getPosts();
+                },
+                setAuthor: function (auth) {
+                    this.author = auth;
+                    this.activeTag = "all";
+                    this.page = 0;
+                    this.search = "";
+                    this.viewDescription = "Autor: " + this.author;
+                    this.posts = [];
+                    this.getPosts();
+                },
+                clearSearch: function (){
+                    this.search="";
+                    this.processSearch();
+                },
+                processSearch: function () {
+                    this.page = 0;
+                    this.posts = [];
+                    this.getPosts();
+                },
+                getPosts: function () {
+                    this.loading = true;
+                    let vm = this;
+                    axios
+                        .get('/api/posts/' + this.sortBy + "/" + this.page + "/" + this.activeTag + "/" + this.author + "/" + this.search)
+                        .then(function (res) {
+                            if (res.data.valid) {
+                                vm.posts = vm.posts.concat(res.data.posts);
+                                vm.loadBlock = false;
+                            }
+                            vm.loading = false;
+                        }).catch(function (){
+                            toastr.error("Bład wczytywania");
+                    });
+                }
+            },
+            mounted() {
+                moment.locale("pl");
+                this.getPosts();
+            },
+            created: function () {
+                this.sortBy=Cookies.get("sortBy") || "new";
+                this.sortByHuman = this.sortBy == "new" ? "Nowe" : "Najlepsze";
+                this.debouncedSearch = _.debounce(this.processSearch, 500)
+            },
+            delimiters: ['<[', ']>']
+        })
+
+        function tagClicked(name) {
+            app.setTag(name);
+        }
+    </script>
+{% endblock %}
+
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/posts.css') }}">
+{% endblock %}

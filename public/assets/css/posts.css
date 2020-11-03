@@ -1,0 +1,46 @@
+#searchbar::placeholder{
+    color: #ffffff;
+}
+#reportModalInput::placeholder{
+    color: #ffffff;
+}
+#imageModalFooter{
+    border-top: 1px solid #212529; !important;
+}
+#confirmModalFooter{
+    border-top: 1px solid #212529; !important;
+}
+#reportModalFooter{
+    border-top: 1px solid #212529; !important;
+}
+pre {
+    white-space: pre-wrap;
+    word-wrap: normal;
+    font-family: inherit;
+}
+
+.thumbnail {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.longpost {
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.fakelink {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.fakelink:hover {
+    color: #0056b3;
+    text-decoration: underline;
+    text-shadow: 1px 1px 1px #555;
+}
+.actions-item{
+    cursor: pointer;
+}
