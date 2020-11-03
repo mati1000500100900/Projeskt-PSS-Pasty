@@ -65,7 +65,7 @@ class PastaController extends AbstractController
                     $em->flush();
                 }
                 catch (\Exception $exception){
-                    $this->addFlash("erreor","Bład bazy danych");
+                    $this->addFlash("error","Błąd bazy danych");
                     return $this->render('pasta/add.html.twig');
                 }
                 $this->addFlash("success","Dodano pomyślnie");

@@ -2,7 +2,6 @@
 {% block body %}
     <br><br>
     <div class="card bg-dark text-white col-md-6 mx-auto">
-
         <div class="card-body">
             <form method="post" action="{{ path('register') }}">
                 <div class="form-group mt-2">
@@ -21,13 +20,11 @@
                     <label for="passwordConfirmInput">Powtórz hasło</label>
                     <input type="password" class="form-control" name="_password_confirm" id="passwordConfirmInput" placeholder="Hasło" {% if lastdata is defined %} value="{{ lastdata['_password_confirm'] }}"{% endif %}>
                 </div>
-
                 <br>
                 <div class="form-group">
                     <button type="submit" value="true" class="btn btn-primary btn-block">Rejestracja</button>
                 </div>
             </form>
         </div>
-
     </div>
 {% endblock %}

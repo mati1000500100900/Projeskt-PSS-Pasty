@@ -50,7 +50,7 @@ class Pasta
      */
     private $likes;
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Picture")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Picture")
      * @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
      */
     private $picture;

@@ -51,17 +51,17 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsDropdown">
                             <a v-if="post.author.username==appUser" class="dropdown-item actions-item"
                                @click="deletePost(post)">
-                                <img width="16" height="16" fill="currentColor" src="/assets/svg/trash-alt.svg">
+                                <img width="16" height="16" fill="currentColor" alt="" src="/assets/svg/trash-alt.svg">
                                 &nbsp;Usuń</a>
                             <a v-else class="dropdown-item actions-item" @click="reportPost(post)">
-                                <img width="16" height="16" fill="currentColor" src="/assets/svg/flag.svg">
+                                <img width="16" height="16" fill="currentColor" alt="" src="/assets/svg/flag.svg">
                                 &nbsp;Zgłoś</a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <img v-if="post.picture" class="thumbnail" @click="showPhoto(post.picture.name)"
-                         :src="'/api/cdn/'+post.picture.name">
+                         :src="'/api/cdn/'+post.picture.name" alt="">
 
                     <pre class="text-white" :class="{longpost: post.long}"><span
                                 v-html="tagsToLinks(post.content)"></span></pre>
@@ -138,7 +138,7 @@
                 <div class="modal-content bg-dark text-white">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">Powód zgłoszenia:</label>
+                            <label for="reportModalInput" class="col-form-label">Powód zgłoszenia:</label>
                             <input type="text" id="reportModalInput" class="form-control bg-tertiary text-white" placeholder="Powód zgłoszenia" v-model="reportReason">
                         </div>
                     </div>
@@ -188,7 +188,7 @@
             },
             watch: {
                 search: function (value) {
-                    if (value != "") {
+                    if (value !== "") {
                         this.debouncedSearch();
                     }
                 }
@@ -202,7 +202,7 @@
                 },
                 tagsToLinks: function (input) {
                     input = this.escapeHtml(input);
-                    let regexp = /\#[a-z0-9]{3,32}/gm;
+                    let regexp = /#[a-z0-9]{3,32}/gm;
                     let matches = [...input.matchAll(regexp)];
                     let uniqueMatches = [];
                     matches.forEach(function (el) {
@@ -225,14 +225,14 @@
                 like: function (post) {
                     axios.get('/api/like/' + post.tid)
                         .then(response => {
-                            if (response.data == "liked") {
+                            if (response.data === "liked") {
                                 post.likesCount++;
                                 post.likes.push({username: this.appUser});
                             }
                         })
                 },
                 ifLiked: function (post) {
-                    return post.likes.some(user => user['username'] == this.appUser);
+                    return post.likes.some(user => user['username'] === this.appUser);
                 },
                 showAll: function (post) {
                     post.long = false;
@@ -247,7 +247,7 @@
                     data.append('tid', this.postInQuestion.tid);
                     data.append("reason", this.reportReason);
                     axios.post("/api/report", data).then(function (res){
-                        if(res.data="reported"){
+                        if(res.data==="reported"){
                             toastr.success('Zgłoszono pomyślnie');
                         }
                         else{
@@ -265,7 +265,7 @@
                     let vm = this;
                     axios.get('/api/delete/' + this.postInQuestion.tid)
                         .then(function (res) {
-                        if (res.data == "deleted") {
+                        if (res.data === "deleted") {
                             vm.posts = vm.posts.filter(function (el) {
                                 return el.tid !== vm.postInQuestion.tid
                             });
@@ -281,7 +281,7 @@
                 setSort: function (by) {
                     Cookies.set("sortBy",by);
                     this.sortBy = by;
-                    this.sortByHuman = by == "new" ? "Nowe" : "Najlepsze";
+                    this.sortByHuman = by === "new" ? "Nowe" : "Najlepsze";
                     this.posts = [];
                     this.page = 0;
                     this.getPosts();
@@ -342,7 +342,7 @@
             },
             created: function () {
                 this.sortBy=Cookies.get("sortBy") || "new";
-                this.sortByHuman = this.sortBy == "new" ? "Nowe" : "Najlepsze";
+                this.sortByHuman = this.sortBy === "new" ? "Nowe" : "Najlepsze";
                 this.debouncedSearch = _.debounce(this.processSearch, 500)
             },
             delimiters: ['<[', ']>']
