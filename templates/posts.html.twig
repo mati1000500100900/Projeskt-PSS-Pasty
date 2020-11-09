@@ -28,7 +28,9 @@
                             <input class="form-control bg-tertiary text-white" id="searchbar" type="text"
                                    placeholder="Szukaj" v-model="search" autocomplete="off">
                             <div v-if="search" class="input-group-append">
-                                <button class="btn btn-outline-light bg-tertiary" type="button" @click="clearSearch()">Wyczyść</button>
+                                <button class="btn btn-outline-light bg-tertiary" type="button" @click="clearSearch()">
+                                    Wyczyść
+                                </button>
                             </div>
                         </div>
 
@@ -41,7 +43,7 @@
             <br>
             <div class="card text-white bg-dark">
                 <div class="card-header">
-                    <span @click="setAuthor(post.author.username)"><[post.author.username]></span>&nbsp;&nbsp;&nbsp;<small
+                    <span class="authorName" @click="setAuthor(post.author.username)"><[post.author.username]></span>&nbsp;&nbsp;&nbsp;<small
                             v-html="timestampToMoment(post.timestamp)"></small>
                     <div v-if="appUser" class="dropdown float-right">
                         <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="actionsDropdown"
@@ -70,7 +72,8 @@
                 <div class="card-footer">
                     <template v-if="appUser!='' && appUser!=post.author.username">
                         <template v-if="ifLiked(post)">
-                            <span class="float-right btn btn-success btn-sm"><[post.likesCount]></span>
+                            <span class="float-right btn btn-success btn-sm"
+                                  @click="dislike(post)"><[post.likesCount]></span>
                         </template>
                         <template v-else>
                             <span class="float-right btn btn-primary btn-sm"
@@ -139,7 +142,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="reportModalInput" class="col-form-label">Powód zgłoszenia:</label>
-                            <input type="text" id="reportModalInput" class="form-control bg-tertiary text-white" placeholder="Powód zgłoszenia" v-model="reportReason">
+                            <input type="text" id="reportModalInput" class="form-control bg-tertiary text-white"
+                                   placeholder="Powód zgłoszenia" v-model="reportReason">
                         </div>
                     </div>
                     <div class="modal-footer" id="reportModalFooter">
@@ -224,10 +228,23 @@
                 },
                 like: function (post) {
                     axios.get('/api/like/' + post.tid)
-                        .then(response => {
-                            if (response.data === "liked") {
+                        .then(res => {
+                            if (res.data === "liked") {
                                 post.likesCount++;
                                 post.likes.push({username: this.appUser});
+                            } else {
+                                toastr.error(res.data);
+                            }
+                        })
+                },
+                dislike: function (post) {
+                    axios.get('/api/dislike/' + post.tid)
+                        .then(res => {
+                            if (res.data === "disliked") {
+                                post.likesCount--;
+                                post.likes = post.likes.filter(user => user['username'] !== this.appUser);
+                            } else {
+                                toastr.error(res.data);
                             }
                         })
                 },
@@ -237,23 +254,22 @@
                 showAll: function (post) {
                     post.long = false;
                 },
-                reportPost: function (post){
-                    this.reportReason="";
+                reportPost: function (post) {
+                    this.reportReason = "";
                     this.postInQuestion = post;
                     $('#reportModal').modal('show');
                 },
-                actuallyReport: function (){
+                actuallyReport: function () {
                     let data = new FormData();
                     data.append('tid', this.postInQuestion.tid);
                     data.append("reason", this.reportReason);
-                    axios.post("/api/report", data).then(function (res){
-                        if(res.data==="reported"){
+                    axios.post("/api/report", data).then(function (res) {
+                        if (res.data === "reported") {
                             toastr.success('Zgłoszono pomyślnie');
-                        }
-                        else{
+                        } else {
                             toastr.error(res.data);
                         }
-                    }).catch(function (){
+                    }).catch(function () {
                         toastr.error("Błąd API");
                     })
                 },
@@ -265,21 +281,18 @@
                     let vm = this;
                     axios.get('/api/delete/' + this.postInQuestion.tid)
                         .then(function (res) {
-                        if (res.data === "deleted") {
-                            vm.posts = vm.posts.filter(function (el) {
-                                return el.tid !== vm.postInQuestion.tid
-                            });
-                            toastr.success('Usunięto pomyślnie');
-                        }
-                        else{
-                            toastr.error(res.data);
-                        }
-                    }).catch(function (){
+                            if (res.data === "deleted") {
+                                vm.posts = vm.posts.filter(post => post.tid !== vm.postInQuestion.tid);
+                                toastr.success('Usunięto pomyślnie');
+                            } else {
+                                toastr.error(res.data);
+                            }
+                        }).catch(function () {
                         toastr.error("Błąd API");
                     })
                 },
                 setSort: function (by) {
-                    Cookies.set("sortBy",by);
+                    Cookies.set("sortBy", by);
                     this.sortBy = by;
                     this.sortByHuman = by === "new" ? "Nowe" : "Najlepsze";
                     this.posts = [];
@@ -311,8 +324,8 @@
                     this.posts = [];
                     this.getPosts();
                 },
-                clearSearch: function (){
-                    this.search="";
+                clearSearch: function () {
+                    this.search = "";
                     this.processSearch();
                 },
                 processSearch: function () {
@@ -331,8 +344,8 @@
                                 vm.loadBlock = false;
                             }
                             vm.loading = false;
-                        }).catch(function (){
-                            toastr.error("Bład wczytywania");
+                        }).catch(function () {
+                        toastr.error("Bład wczytywania");
                     });
                 }
             },
@@ -341,7 +354,7 @@
                 this.getPosts();
             },
             created: function () {
-                this.sortBy=Cookies.get("sortBy") || "new";
+                this.sortBy = Cookies.get("sortBy") || "new";
                 this.sortByHuman = this.sortBy === "new" ? "Nowe" : "Najlepsze";
                 this.debouncedSearch = _.debounce(this.processSearch, 500)
             },

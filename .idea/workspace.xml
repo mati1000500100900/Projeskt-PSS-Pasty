@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6a06db12-64dc-48a8-a843-8a5444d7b014" name="Default Changelist" comment="Fix">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/migrations/Version20201103135000.php" afterDir="false" />
+    <list default="true" id="6a06db12-64dc-48a8-a843-8a5444d7b014" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/public/assets/js/toastr.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/css/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/css/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/PastaController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/PastaController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Entity/Pasta.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/Pasta.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/assets/css/posts.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/css/posts.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/ApiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/ApiController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/pasta/add.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/pasta/add.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/posts.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/posts.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/user/login.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/login.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/user/register.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/register.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +141,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/public/assets/js" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -159,12 +155,12 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/assets/js" />
+      <recent name="$PROJECT_DIR$/public/assets/svg" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/public" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/public/assets/svg" />
-      <recent name="$PROJECT_DIR$/public/assets/js" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -183,7 +179,10 @@
       <workItem from="1604223250348" duration="42914000" />
       <workItem from="1604319236607" duration="18749000" />
       <workItem from="1604346114355" duration="10798000" />
-      <workItem from="1604400191594" duration="7413000" />
+      <workItem from="1604400191594" duration="8078000" />
+      <workItem from="1604582433564" duration="160000" />
+      <workItem from="1604877773112" duration="3162000" />
+      <workItem from="1604951417512" duration="1847000" />
     </task>
     <task id="LOCAL-00001" summary="Innitial commit">
       <created>1604406647937</created>
@@ -192,7 +191,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604406647937</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Picture upload fix">
+      <created>1604413006223</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1604413006223</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -200,7 +206,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Innitial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Innitial commit" />
+    <MESSAGE value="Picture upload fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Picture upload fix" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2727" y="371" width="567" height="384" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1604155514820">
@@ -219,14 +226,14 @@
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
     <state x="2765" y="428" width="475" height="269" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604096361620" />
-    <state x="2606" y="138" width="794" height="850" key="CommitChangelistDialog2" timestamp="1604408707911">
+    <state x="2606" y="138" width="794" height="850" key="CommitChangelistDialog2" timestamp="1604413006049">
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
-    <state x="2606" y="138" width="794" height="850" key="CommitChangelistDialog2/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604408707911" />
-    <state x="2791" y="310" width="424" height="505" key="FileChooserDialogImpl" timestamp="1604406500365">
+    <state x="2606" y="138" width="794" height="850" key="CommitChangelistDialog2/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604413006049" />
+    <state x="2791" y="310" width="424" height="505" key="FileChooserDialogImpl" timestamp="1604582592148">
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
-    <state x="2791" y="310" width="424" height="505" key="FileChooserDialogImpl/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604406500365" />
+    <state x="2791" y="310" width="424" height="505" key="FileChooserDialogImpl/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604582592148" />
     <state x="2739" y="295" width="527" height="536" key="NewPhpClassDialog" timestamp="1604243901181">
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
@@ -235,10 +242,10 @@
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
     <state x="2512" y="201" key="SettingsEditor/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604408835534" />
-    <state x="2603" y="302" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1604406764179">
+    <state x="2603" y="302" width="800" height="522" key="Vcs.Push.Dialog.v2" timestamp="1604413047615">
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>
-    <state x="2603" y="302" width="800" height="522" key="Vcs.Push.Dialog.v2/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604406764179" />
+    <state x="2603" y="302" width="800" height="522" key="Vcs.Push.Dialog.v2/2048.47.1920.1080/0.0.2048.1087/3968.47.1920.1080@2048.47.1920.1080" timestamp="1604413047615" />
     <state x="2816" y="483" width="373" height="160" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1604407269113">
       <screen x="2048" y="47" width="1920" height="1080" />
     </state>

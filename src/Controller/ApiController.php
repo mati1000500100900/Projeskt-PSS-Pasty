@@ -59,6 +59,39 @@ class ApiController extends AbstractController
         return new JsonResponse("liked");
     }
 
+
+    /**
+     * @Route("/api/dislike/{tid}", name="api_dislike_post")
+     */
+    public function disLikeAction($tid=""){
+        $doc=$this->getDoctrine();
+        $em=$doc->getManager();
+        $post=$doc->getRepository(Pasta::class)->findOneBy(["tid"=>$tid]);
+        if(empty($post)){
+            return new JsonResponse("Nie ma takiego wpisu");
+        }
+        else if(empty($this->getUser())){
+            return new JsonResponse("Musisz być zalogownay");
+        }
+        else if($post->getLikes()->contains($this->getUser())){
+
+            $likes=$post->getLikes();
+            $likes->removeElement($this->getUser());
+            $post->setLikes($likes);
+            try{
+                $em->persist($post);
+                $em->flush();
+            }
+            catch (\Exception $exception){
+                return new JsonResponse("database error");
+            }
+        }
+        else{
+            return new JsonResponse("Nie lubisz tego wpisu");
+        }
+        return new JsonResponse("disliked");
+    }
+
     /**
      * @Route("/api/duplicates", name="api_check_duplicates")
      */

@@ -5,7 +5,8 @@
         <div class="card-body">
             <form method="post" action="{{ path('pasta_add') }}">
                 <div class="form-group">
-                    <textarea rows="6" class="form-control" name="content" v-model="content" id="contentInput" placeholder="Tresć"></textarea>
+                    <textarea rows="6" class="form-control" name="content" v-model="content" id="contentInput"
+                              placeholder="Tresć"></textarea>
                 </div>
                 <div class="custom-file">
                     <label for="customFile">Obrazek relacyjny</label>
@@ -13,7 +14,8 @@
                     <label class="custom-file-label" for="customFile"><[filename]></label>
                 </div>
                 <div v-if="showProgress" class="progress form-group">
-                    <div class="progress-bar" id="fileUploadProgress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="{ width: progress + '%' }"></div>
+                    <div class="progress-bar" id="fileUploadProgress" role="progressbar" aria-valuenow="0"
+                         aria-valuemin="0" aria-valuemax="100" :style="{ width: progress + '%' }"></div>
                 </div>
                 <input type="text" name="imageName" id="imageName" v-model="imageName" hidden>
                 <div class="form-group">
@@ -24,7 +26,7 @@
     </div>
 {% endblock %}
 
-{% block javascripts%}
+{% block javascripts %}
     <script src="{{ asset('assets/js/axios.js') }}"></script>
     <script src="{{ asset('assets/js/vue.js') }}"></script>
     <script src="{{ asset('assets/js/lodash.js') }}"></script>
@@ -41,51 +43,56 @@
                 imageName: "",
             },
             watch: {
-                content: function (newContent, oldContent){
-                    if(Math.abs(newContent.length-oldContent.length)>10){
+                content: function (newContent, oldContent) {
+                    if (Math.abs(newContent.length - oldContent.length) > 10) {
                         this.testForDuplicates();
-                    }
-                    else{
+                    } else {
                         this.debouncedGetAnswer();
                     }
                 }
             },
             methods: {
                 fileChosen(event) {
-                    this.filename=event.target.files[0].name;
-                    this.progress=0;
-                    this.showProgress=true;
-                    let data = new FormData();
-                    data.append('file', event.target.files[0]);
-                    let vc=this;
-                    let config = {
-                        onUploadProgress: function(progressEvent) {
-                            vc.progress = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
-                        }
-                    };
-                    axios.post('/api/upload', data, config)
-                        .then(function (res) {
-                            vc.imageName=res.data.tid;
-                        }).catch(function (err) {
-
+                    let extensions = ["jpg", "jpeg", "png"];
+                    if (event.target.files[0].size > 1e6) { //1MB limit
+                        toastr.error("Zbyt duży plik");
+                    } else if (!extensions.includes(event.target.files[0].name.split('.').pop())) {
+                        toastr.error("Złe rozszerzenie pliku");
+                    } else {
+                        this.filename = event.target.files[0].name;
+                        this.progress = 0;
+                        this.showProgress = true;
+                        let data = new FormData();
+                        data.append('file', event.target.files[0]);
+                        let vc = this;
+                        let config = {
+                            onUploadProgress: function (progressEvent) {
+                                vc.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            }
+                        };
+                        axios.post('/api/upload', data, config)
+                            .then(function (res) {
+                                vc.imageName = res.data.tid;
+                            }).catch(function (err) {
+                            toastr.error("Błąd przy dodawaniu pliku");
                         });
+                    }
                 },
-                testForDuplicates: function (){
-                    if(this.content.length>200) {
-                        let data=new FormData();
-                        data.append('text',this.content);
-                        let vm=this;
-                        axios.post('/api/duplicates',data)
-                            .then(function (res){
-                                if(res.data.sure>0.8){
+                testForDuplicates: function () {
+                    if (this.content.length > 200) {
+                        let data = new FormData();
+                        data.append('text', this.content);
+                        let vm = this;
+                        axios.post('/api/duplicates', data)
+                            .then(function (res) {
+                                if (res.data.sure > 0.8) {
                                     toastr.error("Jest już taka pasta");
-                                    vm.disableSubmit=true;
+                                    vm.disableSubmit = true;
+                                } else {
+                                    vm.disableSubmit = false;
                                 }
-                                else{
-                                    vm.disableSubmit=false;
-                                }
-                            }).catch(function (err){
-                                toastr.error("Błąd przy sprawdzaniu");
+                            }).catch(function (err) {
+                            toastr.error("Błąd przy sprawdzaniu");
                         });
                     }
                 }
@@ -93,7 +100,7 @@
             created: function () {
                 this.debouncedGetAnswer = _.debounce(this.testForDuplicates, 2000)
             },
-            delimiters: ['<[',']>']
+            delimiters: ['<[', ']>']
         })
     </script>
 {% endblock %}

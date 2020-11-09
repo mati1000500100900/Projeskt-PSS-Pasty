@@ -44,3 +44,7 @@ pre {
 .actions-item{
     cursor: pointer;
 }
+.authorName{
+    color: orange;
+    cursor: pointer;
+}
